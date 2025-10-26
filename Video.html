@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Colorful Video Player — Disco Edition 🎵</title>
+    <style>
+         :root {
+            --bg: #1b1f2a;
+            --panel: #222831;
+            --accent: #ff7a59;
+            --accent2: #ff4fa3;
+            --text: #eee;
+            --muted: #aaa;
+        }
+        
+        * {
+            box-sizing: border-box;
+            user-select: none
+        }
+        
+        body {
+            margin: 0;
+            height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        /* ✨ Disco Welcome Animation ✨ */
+        
+        #intro {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: radial-gradient(circle at center, var(--accent2), var(--accent));
+            color: white;
+            font-size: 3em;
+            z-index: 999;
+            animation: fadeOut 4s ease forwards 3s;
+            overflow: hidden;
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                pointer-events: none;
+                transform: scale(0.9);
+            }
+        }
+        
+        .disco-light {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.7;
+            filter: blur(20px);
+            animation: moveLight 3s linear infinite alternate;
+        }
+        
+        @keyframes moveLight {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(100px, -80px) scale(1.5);
+            }
+        }
+        /* 🎬 Player Styles */
+        
+        #player {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            background: var(--panel);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 0 20px #0007;
+        }
+        
+        video {
+            width: 100%;
+            display: block;
+            background: black;
+        }
+        
+        #controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        button,
+        input[type=range] {
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 4px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: var(--accent2)
+        }
+        
+        input[type=range] {
+            cursor: pointer;
+            width: 100px
+        }
+        
+        #filename {
+            font-size: 0.9em;
+            color: var(--muted);
+            text-align: center;
+            padding: 4px 0;
+        }
+        /* Help overlay */
+        
+        #help {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #fff;
+            z-index: 50;
+        }
+        
+        #help.active {
+            display: flex
+        }
+        
+        #help table {
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        #help td {
+            padding: 4px 8px;
+            border: 1px solid #666;
+        }
+        /* Lock overlay */
+        
+        #lockOverlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            z-index: 60;
+        }
+        
+        #lockOverlay.active {
+            display: flex
+        }
+        /* File list modal */
+        
+        #fileList {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            z-index: 70;
+        }
+        
+        #fileList.active {
+            display: flex;
+        }
+        
+        #fileList ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px;
+            max-height: 70%;
+            overflow-y: auto;
+            width: 80%;
+            text-align: center;
+        }
+        
+        #fileList li {
+            padding: 8px;
+            border-bottom: 1px solid #555;
+            cursor: pointer;
+        }
+        
+        #fileList li:hover {
+            background: var(--accent);
+            color: white;
+        }
+        
+        #fileList h2 {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Disco Intro -->
+    <div id="intro">
+        <div class="disco-light" style="width:150px;height:150px;background:#ff7a59;top:20%;left:20%"></div>
+        <div class="disco-light" style="width:200px;height:200px;background:#ff4fa3;bottom:25%;right:15%"></div>
+        <div class="disco-light" style="width:100px;height:100px;background:#ffe259;top:50%;right:30%"></div>
+        <h1>🎶 Welcome to Disco Player 🎶</h1>
+        <p style="font-size:1rem;">Let’s vibe with your videos/Audio 🎸💃🕺</p>
+        <audio autoplay>
+    <source src="https://cdn.pixabay.com/download/audio/2023/02/28/audio_056e7b89a7.mp3?filename=party-pop-142083.mp3" type="audio/mpeg">
+  </audio>
+    </div>
+
+    <div id="player">
+        <video id="video" controlslist="nodownload"></video>
+        <div id="filename">No video loaded</div>
+        <div id="controls">
+            <button id="openFolder">📁 Folder</button>
+            <button id="prev">⏮ Prev</button>
+            <button id="play">▶️</button>
+            <button id="next">⏭ Next</button>
+            <button id="mute">🔈</button>
+            <input id="volume" type="range" min="0" max="1" step="0.05" value="1">
+            <button id="speed">1x</button>
+            <button id="lock">🔒</button>
+            <button id="helpBtn">❓</button>
+            <button id="fs">⛶</button>
+        </div>
+
+        <!-- Help Overlay -->
+        <div id="help">
+            <h2>🎹 Shortcuts</h2>
+            <table>
+                <tr>
+                    <td>Space</td>
+                    <td>Play / Pause</td>
+                </tr>
+                <tr>
+                    <td>← / →</td>
+                    <td>Prev / Next Video</td>
+                </tr>
+                <tr>
+                    <td>&lt; / &gt;</td>
+                    <td>Rewind / Forward 10s</td>
+                </tr>
+                <tr>
+                    <td>↑ / ↓</td>
+                    <td>Volume ±10%</td>
+                </tr>
+                <tr>
+                    <td>M</td>
+                    <td>Mute</td>
+                </tr>
+                <tr>
+                    <td>L</td>
+                    <td>Lock/Unlock</td>
+                </tr>
+                <tr>
+                    <td>H</td>
+                    <td>Help</td>
+                </tr>
+                <tr>
+                    <td>CapsLock</td>
+                    <td>Show All Files</td>
+                </tr>
+            </table>
+            <p>Press H to close</p>
+        </div>
+
+        <!-- Lock -->
+        <div id="lockOverlay">🔒 Locked — Press L to Unlock</div>
+
+        <!-- File List Modal -->
+        <div id="fileList">
+            <h2>📂 All Videos</h2>
+            <ul id="list"></ul>
+            <button onclick="fileList.classList.remove('active')">Close ✖</button>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById("video");
+        const openFolder = document.getElementById("openFolder");
+        const playBtn = document.getElementById("play");
+        const nextBtn = document.getElementById("next");
+        const prevBtn = document.getElementById("prev");
+        const muteBtn = document.getElementById("mute");
+        const vol = document.getElementById("volume");
+        const speedBtn = document.getElementById("speed");
+        const helpBtn = document.getElementById("helpBtn");
+        const help = document.getElementById("help");
+        const lockBtn = document.getElementById("lock");
+        const lockOverlay = document.getElementById("lockOverlay");
+        const fsBtn = document.getElementById("fs");
+        const filename = document.getElementById("filename");
+        const fileList = document.getElementById("fileList");
+        const list = document.getElementById("list");
+
+        let files = [],
+            index = 0,
+            locked = false;
+        if (localStorage.speed) video.playbackRate = parseFloat(localStorage.speed);
+
+        openFolder.onclick = async() => {
+            try {
+                const dir = await window.showDirectoryPicker();
+                files = [];
+                for await (const [name, handle] of dir.entries()) {
+                    if (name.match(/\.(mp4|mp3|webm|ogg|mov|mkv|avi|flv|wmv|3gp|mst|m2ts)$/i)) {
+                        files.push({
+                            name,
+                            handle
+                        });
+                    }
+                }
+                files.sort((a, b) => a.name.localeCompare(b.name));
+                if (files.length > 0) {
+                    index = 0;
+                    loadVideo();
+                } else alert("No video files found!");
+            } catch (e) {
+                console.log(e);
+            }
+        };
+
+        async function loadVideo() {
+            const file = await files[index].handle.getFile();
+            const url = URL.createObjectURL(file);
+            video.src = url;
+            filename.textContent = files[index].name;
+            video.play();
+            playBtn.textContent = "⏸";
+        }
+
+        function nextVideo() {
+            if (!files.length) return;
+            index = (index + 1) % files.length;
+            loadVideo();
+        }
+
+        function prevVideo() {
+            if (!files.length) return;
+            index = (index - 1 + files.length) % files.length;
+            loadVideo();
+        }
+
+        playBtn.onclick = () => {
+            if (video.paused) {
+                video.play();
+                playBtn.textContent = "⏸";
+            } else {
+                video.pause();
+                playBtn.textContent = "▶️";
+            }
+        };
+        video.onended = () => nextVideo();
+        nextBtn.onclick = nextVideo;
+        prevBtn.onclick = prevVideo;
+
+        muteBtn.onclick = () => {
+            video.muted = !video.muted;
+            muteBtn.textContent = video.muted ? "🔇" : "🔈";
+        };
+        vol.oninput = () => video.volume = parseFloat(vol.value);
+
+        speedBtn.onclick = () => {
+            let s = video.playbackRate + 0.25;
+            if (s > 2) s = 0.5;
+            video.playbackRate = s;
+            speedBtn.textContent = s.toFixed(2) + "x";
+            localStorage.speed = s;
+        };
+
+        fsBtn.onclick = () => {
+            if (!document.fullscreenElement) video.requestFullscreen();
+            else document.exitFullscreen();
+        };
+
+        helpBtn.onclick = () => help.classList.toggle("active");
+        lockBtn.onclick = () => toggleLock();
+
+        function toggleLock() {
+            locked = !locked;
+            lockOverlay.classList.toggle("active", locked);
+        }
+
+        /* Show all files when CapsLock pressed */
+        function showFileList() {
+            if (!files.length) {
+                alert("No folder loaded.");
+                return;
+            }
+            list.innerHTML = "";
+            files.forEach((f, i) => {
+                const li = document.createElement("li");
+                li.textContent = (i === index ? "▶ " : "") + f.name;
+                li.onclick = () => {
+                    index = i;
+                    fileList.classList.remove("active");
+                    loadVideo();
+                };
+                list.appendChild(li);
+            });
+            fileList.classList.add("active");
+        }
+
+        /* Keyboard Controls */
+        document.addEventListener("keydown", e => {
+            if (locked && e.key.toLowerCase() !== "l") return;
+            switch (e.key) {
+                case " ":
+                    e.preventDefault();
+                    playBtn.click();
+                    break;
+                case "ArrowRight":
+                    nextVideo();
+                    break;
+                case "ArrowLeft":
+                    prevVideo();
+                    break;
+                case ">":
+                    video.currentTime += 10;
+                    break;
+                case "<":
+                    video.currentTime -= 10;
+                    break;
+                case "ArrowUp":
+                    video.volume = Math.min(1, video.volume + 0.1);
+                    vol.value = video.volume;
+                    break;
+                case "ArrowDown":
+                    video.volume = Math.max(0, video.volume - 0.1);
+                    vol.value = video.volume;
+                    break;
+                case "m":
+                case "M":
+                    muteBtn.click();
+                    break;
+                case "l":
+                case "L":
+                    toggleLock();
+                    break;
+                case "h":
+                case "H":
+                    help.classList.toggle("active");
+                    break;
+                case "CapsLock":
+                    showFileList();
+                    break;
+                case "+":
+                    video.playbackRate = Math.min(2, video.playbackRate + 0.25);
+                    localStorage.speed = video.playbackRate;
+                    speedBtn.textContent = video.playbackRate.toFixed(2) + "x";
+                    break;
+                case "-":
+                    video.playbackRate = Math.max(0.5, video.playbackRate - 0.25);
+                    localStorage.speed = video.playbackRate;
+                    speedBtn.textContent = video.playbackRate.toFixed(2) + "x";
+                    break;
+            }
+        });
+    </script>
+</body>
+
+</html>
